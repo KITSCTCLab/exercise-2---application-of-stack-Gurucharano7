@@ -24,10 +24,7 @@ class Evaluate:
     Returns:
       True if it is empty, else returns False.
     """
-    if self.top==-1:
-      return true
-    else:
-      return false
+    return self.top == -1
 
 
   def pop(self):
@@ -36,9 +33,8 @@ class Evaluate:
     Returns:
       The data which is popped out if the stack is not empty.
     """
-    if isEmpty()==false:
-      print(self.stack[self.top--])
-      
+    self.top -= 1
+    return self.stack.pop()
 
 
   def push(self, operand):
@@ -47,8 +43,8 @@ class Evaluate:
     Arguments:
       operand: The operand to be pushed.
     """
-    if self.top!=self.size:
-      self.stack[++self.top]=operand
+    self.stack.append(operand)
+    self.top += 1
 
 
   def validate_postfix_expression(self, expression):
@@ -59,18 +55,17 @@ class Evaluate:
     Returns:
       True if the expression is valid, else returns False.
     """
-    self.operand=0
-    self.operator=0
+    operators = []
+    operands = []
     for i in expression:
-      if i>=0  or i<0:
-        push(i)
-        self.operand++
+      if i.isdigit():
+        operands.append(i)
       else:
-        self.operator++
-    if (self.operator==self.operand+1):
-      return true 
-    else:
-      return false
+        operators.append(i)
+
+    status = len(operators) + len(operands) == len(expression) and len(operands)-1 == len(operators) and expression[0].isdigit() and expression[1].isdigit()
+    return status
+
 
 
   def evaluate_postfix_expression(self, expression):
@@ -81,17 +76,29 @@ class Evaluate:
     Returns:
       The result of evaluated postfix expression.
     """
-    operators=['+','-','*','/','%']
     for i in expression:
-      if i in operators:
-        result=eval(str(self.stack[self.top-1]) + i + str(self.stack[self.top])))
-        pop()
-        pop()
-        push(result)
-    if stack.top==0:
-      return result
-        
-    
+      if i.isdigit():
+        self.push(int(i))
+      elif i in ["+","-","*","/","^"]:
+        if i == "+":
+          b, a = self.pop(),self.pop()
+          self.push(a+b)
+        elif i == "-":
+          b, a = self.pop(),self.pop()
+          self.push(a-b)
+        elif i == "*":
+          b, a = self.pop(),self.pop()
+          self.push(a*b)
+        elif i == "/":
+          b, a = self.pop(),self.pop()
+          self.push(a//b)
+        elif i == "^":
+          b, a = self.pop(),self.pop()
+          self.push(a**b)
+
+    return self.pop()
+
+
 # Do not change the following code
 postfix_expression = input()  # Read postfix expression
 tokens = postfix_expression.split()
